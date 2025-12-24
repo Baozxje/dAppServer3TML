@@ -177,7 +177,7 @@ router.post("/", jwtAuth, async (req, res) => {
             farmLocation: {
               lat: data.lat || 0, // App gửi lên field 'lat'
               lng: data.lng || 0, // App gửi lên field 'lng'
-              address: "Đang cập nhật...",
+              address: "Nông trại thực tế",
             },
           });
           // Thông báo
