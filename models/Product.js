@@ -34,6 +34,18 @@ const productSchema = new mongoose.Schema({
     lng: { type: Number },
     address: { type: String },
   },
+  transportLocation: {
+    // Vị trí lúc tài xế nhận hàng
+    lat: { type: Number, default: 0 },
+    lng: { type: Number, default: 0 },
+    address: { type: String },
+  },
+  retailerLocation: {
+    // Vị trí lúc siêu thị nhận hàng
+    lat: { type: Number, default: 0 },
+    lng: { type: Number, default: 0 },
+    address: { type: String },
+  },
 });
 
 module.exports = mongoose.model("Product", productSchema);
