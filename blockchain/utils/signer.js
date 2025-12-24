@@ -3,7 +3,6 @@ const ContractABI = require("../contract/abi.json");
 const contractAddress = process.env.CONTRACT_ADDRESS;
 
 // lay thon tin tu file .env
-const rpcUrl = process.env.RPC_URL;
 const relayerPrivateKey = process.env.PRIVATE_KEY;
 
 if (!relayerPrivateKey) {

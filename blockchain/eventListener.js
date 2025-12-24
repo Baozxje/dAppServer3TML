@@ -7,10 +7,11 @@ const setupEventListeners = () => {
   // 1. Sự kiện: Moderator DUYỆT Gieo Trồng
   // Event trong Solidity: event PlantingApproved(string indexed productId);
   contract.on("PlantingApproved", async (productId) => {
+    const pid = productId.toString();
     console.log(`⚡ EVENT: PlantingApproved - ID: ${productId}`);
     try {
       await Product.findOneAndUpdate(
-        { productId: productId },
+        { productId: pid },
         {
           plantingStatus: 1,
           statusCode: 1, // Đang canh tác
@@ -26,10 +27,11 @@ const setupEventListeners = () => {
 
   // 2. Sự kiện: Moderator TỪ CHỐI Gieo Trồng
   contract.on("PlantingRejected", async (productId) => {
+    const pid = productId.toString();
     console.log(`⚡ EVENT: PlantingRejected - ID: ${productId}`);
     try {
       await Product.findOneAndUpdate(
-        { productId: productId },
+        { productId: pid },
         {
           plantingStatus: 2,
           statusCode: 0, // Quay về pending hoặc trạng thái lỗi
@@ -45,10 +47,11 @@ const setupEventListeners = () => {
 
   // 3. Sự kiện: Moderator DUYỆT Thu Hoạch
   contract.on("HarvestApproved", async (productId) => {
+    const pid = productId.toString();
     console.log(`⚡ EVENT: HarvestApproved - ID: ${productId}`);
     try {
       await Product.findOneAndUpdate(
-        { productId: productId },
+        { productId: pid },
         {
           harvestStatus: 1,
           statusCode: 2, // Đã thu hoạch
@@ -67,10 +70,11 @@ const setupEventListeners = () => {
   contract.on(
     "ReceiveUpdated",
     async (productId, transporterName, receiveDate) => {
+      const pid = productId.toString();
       console.log(`⚡ EVENT: ReceiveUpdated - ID: ${productId}`);
       try {
         await Product.findOneAndUpdate(
-          { productId: productId },
+          { productId: pid },
           {
             isReceived: true,
             transporterName: transporterName,
@@ -88,10 +92,11 @@ const setupEventListeners = () => {
 
   // 5. Sự kiện: Nhà vận chuyển GIAO HÀNG
   contract.on("DeliveryUpdated", async (productId) => {
+    const pid = productId.toString();
     console.log(`⚡ EVENT: DeliveryUpdated - ID: ${productId}`);
     try {
       await Product.findOneAndUpdate(
-        { productId: productId },
+        { productId: pid },
         {
           isDelivered: true,
           statusCode: 3, // Đã lên kệ / Sẵn sàng bán

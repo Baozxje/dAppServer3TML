@@ -4,6 +4,7 @@ const { readContract } = require("../blockchain/utils/signer");
 const jwtAuth = require("../middleware/auth");
 const User = require("../models/User");
 const Product = require("../models/Product");
+const { readContract, relayerAddress } = require("../blockchain/utils/signer");
 
 // HÀM CHUYỂN BigInt/Number/string → number an toàn
 const toNumber = (value) => {
