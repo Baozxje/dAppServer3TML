@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const { readContract } = require("../blockchain/utils/signer");
 const jwtAuth = require("../middleware/auth");
 const User = require("../models/User");
 const Product = require("../models/Product");
