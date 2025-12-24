@@ -105,55 +105,64 @@ router.get("/moderated-requests", jwtAuth, async (req, res) => {
 
     const historyPlanting = [];
     const historyHarvest = [];
-    const nextId = await readContract.nextProductId();
 
-    for (let i = 1; i < nextId; i++) {
-      try {
-        const pid = await readContract.indexToProductId(i);
-        if (!pid) continue;
-        const trace = await readContract.getTrace(pid);
+    // --- FIX HIỆU NĂNG: Thay thế vòng lặp for gọi từng cái ---
+    // Thay vì gọi 1000 lần, ta chỉ gọi 1 lần duy nhất lấy về mảng struct
+    // Lưu ý: Hàm này trả về danh sách được duyệt bởi Relayer (Backend)
+    const allTraces = await readContract.getModeratedProducts(relayerAddress);
 
-        const pStatus = toNumber(trace.plantingStatus); // 1: Approved, 2: Rejected
-        const hStatus = toNumber(trace.harvestStatus);
+    console.log(`--> Lấy về ${allTraces.length} sản phẩm đã duyệt (Batch Request)`);
 
-        const item = {
-          id: pid,
-          name: trace.productName,
-          farm: trace.farmName,
-          image: trace.plantingImageUrl || "",
-          date: toNumber(trace.plantingDate),
-          status: "Unknown",
-        };
+    // Xử lý mảng dữ liệu trên RAM (Tốc độ cực nhanh)
+    for (const trace of allTraces) {
+        try {
+            // Dữ liệu trả về từ struct TraceInfo
+            const pStatus = toNumber(trace.plantingStatus);
+            const hStatus = toNumber(trace.harvestStatus);
+            const pid = trace.productId;
 
-        // Lọc danh sách Gieo trồng đã xử lý (Khác 0)
-        if (pStatus !== 0) {
-          let statusText = pStatus === 1 ? "Đã duyệt" : "Từ chối";
-          historyPlanting.push({
-            ...item,
-            status: statusText,
-            statusCode: pStatus,
-          });
+            const item = {
+                id: pid,
+                name: trace.productName,
+                farm: trace.farmName,
+                image: trace.plantingImageUrl || "",
+                date: toNumber(trace.plantingDate),
+                status: "Unknown",
+            };
+
+            // Lọc danh sách Gieo trồng đã xử lý (Khác 0)
+            if (pStatus !== 0) {
+                let statusText = pStatus === 1 ? "Đã duyệt" : "Từ chối";
+                historyPlanting.push({
+                    ...item,
+                    status: statusText,
+                    statusCode: pStatus,
+                });
+            }
+
+            // Lọc danh sách Thu hoạch đã xử lý (Khác 0)
+            if (hStatus !== 0) {
+                let statusText = hStatus === 1 ? "Đã duyệt" : "Từ chối";
+                historyHarvest.push({
+                    ...item,
+                    status: statusText,
+                    statusCode: hStatus,
+                    image: trace.harvestImageUrl || item.image,
+                    type: "harvest",
+                });
+            }
+        } catch (err) {
+            console.log("Lỗi format item:", err.message);
         }
-
-        // Lọc danh sách Thu hoạch đã xử lý (Khác 0)
-        if (hStatus !== 0) {
-          let statusText = hStatus === 1 ? "Đã duyệt" : "Từ chối";
-          historyHarvest.push({
-            ...item,
-            status: statusText,
-            statusCode: hStatus,
-            image: trace.harvestImageUrl || item.image,
-            type: "harvest",
-          });
-        }
-      } catch (e) {}
     }
+    // ---------------------------------------------------------
 
     res.json({
       success: true,
       data: { planting: historyPlanting, harvest: historyHarvest },
     });
   } catch (e) {
+    console.error(e);
     res.status(500).json({ error: e.message });
   }
 });
