@@ -1,10 +1,9 @@
-// /backend/blockchain/utils/signer.js
 const { ethers } = require("ethers");
 const ContractABI = require("../contract/abi.json");
 const contractAddress = process.env.CONTRACT_ADDRESS;
 
-// Lấy thông tin từ .env
-const rpcUrl = process.env.RPC_URL || "https://purple-tame-shape.matic-amoy.quiknode.pro/0f18094c2a0538b9dd3611308ed2b1f941475e56/";
+// lay thon tin tu file .env
+const rpcUrl = process.env.RPC_URL;
 const relayerPrivateKey = process.env.PRIVATE_KEY;
 
 if (!relayerPrivateKey) {
@@ -13,11 +12,11 @@ if (!relayerPrivateKey) {
 
 const provider = new ethers.JsonRpcProvider(rpcUrl);
 
-// 2. WALLET (SIGNER): Tài khoản Relayer sẽ ký giao dịch (BE)
+// tai khoan Relayer de ky giao dich
 const relayerSigner = new ethers.Wallet(relayerPrivateKey, provider);
 console.log(`Relayer Wallet Address: ${relayerSigner.address}`);
 
-// Mọi lệnh gọi hàm ghi (write) trên đối tượng này sẽ được Relayer ký
+// moi lenh ghoi ham ghi tren doi tuong nay se duoc ky boi relayerSigner
 const contractInstance = new ethers.Contract(
   contractAddress,
   ContractABI,
@@ -31,10 +30,10 @@ const readContractInstance = new ethers.Contract(
 );
 
 module.exports = {
-  // Contract dùng để gửi giao dịch (Relayer ký thay)
+  // contract dung de gui giao dich (ky boi Relayer)
   contract: contractInstance,
-  // Contract chỉ dùng để đọc dữ liệu (View/Public)
+  // contract dung chi de doc du lieu
   readContract: readContractInstance,
-  // Địa chỉ ví Relayer (có thể cần dùng để kiểm tra vai trò)
+  // dia chi vi Relayer ky giao dich
   relayerAddress: relayerSigner.address,
 };

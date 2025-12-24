@@ -276,6 +276,9 @@ router.get("/on-shelf", async (req, res) => {
           });
 
           count++;
+
+          //test thu xem nhu lao 
+          await sleep(250);
         }
       } catch (e) {
         console.log(`Lỗi khi đọc sản phẩm ID ${i}:`, e.message);
