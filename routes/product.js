@@ -111,49 +111,51 @@ router.get("/moderated-requests", jwtAuth, async (req, res) => {
     // Lưu ý: Hàm này trả về danh sách được duyệt bởi Relayer (Backend)
     const allTraces = await readContract.getModeratedProducts(relayerAddress);
 
-    console.log(`--> Lấy về ${allTraces.length} sản phẩm đã duyệt (Batch Request)`);
+    console.log(
+      `--> Lấy về ${allTraces.length} sản phẩm đã duyệt (Batch Request)`
+    );
 
     // Xử lý mảng dữ liệu trên RAM (Tốc độ cực nhanh)
     for (const trace of allTraces) {
-        try {
-            // Dữ liệu trả về từ struct TraceInfo
-            const pStatus = toNumber(trace.plantingStatus);
-            const hStatus = toNumber(trace.harvestStatus);
-            const pid = trace.productId;
+      try {
+        // Dữ liệu trả về từ struct TraceInfo
+        const pStatus = toNumber(trace.plantingStatus);
+        const hStatus = toNumber(trace.harvestStatus);
+        const pid = trace.productId;
 
-            const item = {
-                id: pid,
-                name: trace.productName,
-                farm: trace.farmName,
-                image: trace.plantingImageUrl || "",
-                date: toNumber(trace.plantingDate),
-                status: "Unknown",
-            };
+        const item = {
+          id: pid,
+          name: trace.productName,
+          farm: trace.farmName,
+          image: trace.plantingImageUrl || "",
+          date: toNumber(trace.plantingDate),
+          status: "Unknown",
+        };
 
-            // Lọc danh sách Gieo trồng đã xử lý (Khác 0)
-            if (pStatus !== 0) {
-                let statusText = pStatus === 1 ? "Đã duyệt" : "Từ chối";
-                historyPlanting.push({
-                    ...item,
-                    status: statusText,
-                    statusCode: pStatus,
-                });
-            }
-
-            // Lọc danh sách Thu hoạch đã xử lý (Khác 0)
-            if (hStatus !== 0) {
-                let statusText = hStatus === 1 ? "Đã duyệt" : "Từ chối";
-                historyHarvest.push({
-                    ...item,
-                    status: statusText,
-                    statusCode: hStatus,
-                    image: trace.harvestImageUrl || item.image,
-                    type: "harvest",
-                });
-            }
-        } catch (err) {
-            console.log("Lỗi format item:", err.message);
+        // Lọc danh sách Gieo trồng đã xử lý (Khác 0)
+        if (pStatus !== 0) {
+          let statusText = pStatus === 1 ? "Đã duyệt" : "Từ chối";
+          historyPlanting.push({
+            ...item,
+            status: statusText,
+            statusCode: pStatus,
+          });
         }
+
+        // Lọc danh sách Thu hoạch đã xử lý (Khác 0)
+        if (hStatus !== 0) {
+          let statusText = hStatus === 1 ? "Đã duyệt" : "Từ chối";
+          historyHarvest.push({
+            ...item,
+            status: statusText,
+            statusCode: hStatus,
+            image: trace.harvestImageUrl || item.image,
+            type: "harvest",
+          });
+        }
+      } catch (err) {
+        console.log("Lỗi format item:", err.message);
+      }
     }
     // ---------------------------------------------------------
 
@@ -230,17 +232,17 @@ router.get("/on-shelf", async (req, res) => {
   try {
     const products = await Product.find({
       price: { $gt: 0 },
-      statusCode: 3
+      statusCode: 3,
     })
-    .sort({ updatedAt: -1 })
-    .limit(10);
+      .sort({ updatedAt: -1 })
+      .limit(10);
 
-    const formatted = products.map(p => ({
+    const formatted = products.map((p) => ({
       id: p.productId,
       name: p.productName,
       price: p.price,
       image: p.managerReceiveImageUrl || p.plantingImageUrl || "",
-      farm: p.farmName
+      farm: p.farmName,
     }));
 
     res.json({ success: true, data: formatted });
@@ -248,7 +250,6 @@ router.get("/on-shelf", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
-
 
 // API CÔNG KHAI: Lấy danh sách sản phẩm của 1 nông dân cụ thể (qua SĐT)
 router.get("/by-farmer/:phone", async (req, res) => {
@@ -352,6 +353,10 @@ router.get("/:id", async (req, res) => {
         owner: trace.creatorName,
         phone: trace.creatorPhone,
         seed: trace.seedOrigin || "Không rõ nguồn gốc",
+        location:
+          productInDB && productInDB.farmLocation
+            ? productInDB.farmLocation
+            : { lat: 0, lng: 0 },
       },
       dates: {
         planting: toNumber(trace.plantingDate),
