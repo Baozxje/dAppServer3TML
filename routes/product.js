@@ -304,7 +304,7 @@ router.get("/:id", async (req, res) => {
 
     try {
       // 1. Tìm trong Database để lấy dữ liệu chuẩn nhất
-      const productInDB = await Product.findOne({ productId: productId });
+      productInDB = await Product.findOne({ productId: productId });
 
       if (productInDB) {
         // Lấy tên tiếng Việt chuẩn (Logic cũ - Giữ nguyên)
