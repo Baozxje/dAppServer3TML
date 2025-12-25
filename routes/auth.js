@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const jwtAuth = require("../middleware/auth");
 const Notification = require("../models/Notification");
+const Transaction = require("../models/Transaction");
+const auth = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -275,5 +277,36 @@ router.post("/save-device-token", async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+// lay danh sach tat ca user chi admiin 
+router.get("/users", jwtAuth, async (req, res) => {
+  try {
+    if (!["admin"].includes(req.user.role)) {
+      return res.status(403).json({ msg: "Không có quyền truy cập" });
+    }
+
+    const users = await User.find().select("-password");
+    res.json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
+// Lấy tất cả transaction (chỉ admin xem)
+router.get('/transactions', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ msg: 'Access denied' });
+    }
+
+    const transactions = await Transaction.find();
+    res.json(transactions);
+  } catch (error) {
+    console.error('Error fetching transactions:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 module.exports = router;
