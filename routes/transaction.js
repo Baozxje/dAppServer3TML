@@ -293,8 +293,8 @@ router.post("/", jwtAuth, async (req, res) => {
               isReceived: true,
               statusCode: 2,
               transportLocation: {
-                lat: req.body.lat || 0, // App gửi lên
-                lng: req.body.lng || 0,
+                lat: data.lat || 0, // App gửi lên
+                lng: data.lng || 0,
                 address: "Điểm tập kết hàng",
               },
             }
