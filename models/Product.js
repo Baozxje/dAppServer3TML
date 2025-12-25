@@ -46,6 +46,15 @@ const productSchema = new mongoose.Schema({
     lng: { type: Number, default: 0 },
     address: { type: String },
   },
+  careDiary: [
+    {
+      actionType: String, // Tưới nước, Bón phân...
+      description: String,
+      date: Number,
+      image: String,
+      person: String, // Người thực hiện
+    },
+  ],
 });
 
 module.exports = mongoose.model("Product", productSchema);
