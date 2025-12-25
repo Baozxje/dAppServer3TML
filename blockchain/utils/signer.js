@@ -3,14 +3,13 @@ const ContractABI = require("../contract/abi.json");
 const contractAddress = process.env.CONTRACT_ADDRESS;
 
 // lay thon tin tu file .env
-const rpcUrl = process.env.RPC_URL;
 const relayerPrivateKey = process.env.PRIVATE_KEY;
 
 if (!relayerPrivateKey) {
   throw new Error("PRIVATE_KEY must be set in .env for Relayer.");
 }
 
-const provider = new ethers.JsonRpcProvider(rpcUrl);
+const provider = new ethers.WebSocketProvider("wss://polygon-amoy.infura.io/ws/v3/be43e48316e74761a6595959ee476b15");
 
 // tai khoan Relayer de ky giao dich
 const relayerSigner = new ethers.Wallet(relayerPrivateKey, provider);

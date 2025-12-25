@@ -174,6 +174,11 @@ router.post("/", jwtAuth, async (req, res) => {
             statusCode: 0,
             plantingStatus: 0,
             harvestStatus: 0,
+            farmLocation: {
+              lat: data.lat || 0, // App gửi lên field 'lat'
+              lng: data.lng || 0, // App gửi lên field 'lng'
+              address: "Nông trại thực tế",
+            },
           });
           // Thông báo
           await notifyAllModerators(
@@ -270,6 +275,11 @@ router.post("/", jwtAuth, async (req, res) => {
               transporterName: data.transporterName,
               isReceived: true,
               statusCode: 2,
+              transportLocation: {
+                lat: req.body.lat || 0, // App gửi lên
+                lng: req.body.lng || 0,
+                address: "Điểm tập kết hàng",
+              },
             }
           );
           await notifyRole(

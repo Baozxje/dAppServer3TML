@@ -28,6 +28,24 @@ const productSchema = new mongoose.Schema({
   quantity: { type: Number, default: 0 }, // Sản lượng
   unit: { type: String, default: "Kg" }, // Đơn vị (Kg, Tấn...)
   quality: { type: String, default: "Chưa kiểm định" }, // Chất lượng (VietGAP...)
+
+  farmLocation: {
+    lat: { type: Number },
+    lng: { type: Number },
+    address: { type: String },
+  },
+  transportLocation: {
+    // Vị trí lúc tài xế nhận hàng
+    lat: { type: Number, default: 0 },
+    lng: { type: Number, default: 0 },
+    address: { type: String },
+  },
+  retailerLocation: {
+    // Vị trí lúc siêu thị nhận hàng
+    lat: { type: Number, default: 0 },
+    lng: { type: Number, default: 0 },
+    address: { type: String },
+  },
 });
 
 module.exports = mongoose.model("Product", productSchema);
