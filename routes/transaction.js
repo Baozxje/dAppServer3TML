@@ -234,6 +234,8 @@ router.post("/", jwtAuth, async (req, res) => {
               `Vui lòng kiểm tra lại lô hàng ${p.productName}.`
             );
         } else if (action === "harvestProduct") {
+          const productInDB = await Product.findOne({ productId: data.productId });
+          const productName = productInDB ? productInDB.productName : "Sản phẩm";
           await Product.findOneAndUpdate(
             { productId: data.productId },
             {
@@ -247,7 +249,7 @@ router.post("/", jwtAuth, async (req, res) => {
           );
           await notifyAllModerators(
             "✂️ Yêu cầu Thu hoạch",
-            `Nông dân ${currentUser.fullName} thu hoạch ${data.productName}.`
+            `Nông dân ${currentUser.fullName} thu hoạch ${productName}.`
           );
           await notifyRole(
             "moderator",
@@ -320,7 +322,7 @@ router.post("/", jwtAuth, async (req, res) => {
             { price: data.price, statusCode: 3 }
           );
           await notifyRole(
-            "admin",
+            "manager",
             "💰 Sản phẩm lên kệ",
             `Sản phẩm ${data.productId} đang bán với giá ${data.price}.`
           );
