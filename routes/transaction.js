@@ -190,6 +190,23 @@ router.post("/", jwtAuth, async (req, res) => {
             "🌱 Yêu cầu Gieo trồng mới",
             `Vào duyệt ngay!`
           );
+        } else if (action === "logCare") {
+          console.log("📝 Đang lưu nhật ký:", data);
+          await Product.findOneAndUpdate(
+            { productId: data.productId },
+            {
+              $push: {
+                careDiary: {
+                  actionType: data.careType,
+                  description: data.description,
+                  date: data.careDate,
+                  image: data.careImageUrl || "",
+                  person: currentUser.fullName,
+                },
+              },
+            }
+          );
+          console.log("✅ Đã lưu nhật ký chăm sóc vào DB");
         } else if (action === "approvePlanting") {
           const p = await Product.findOneAndUpdate(
             { productId: data.productId },

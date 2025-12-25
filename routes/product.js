@@ -348,6 +348,7 @@ router.get("/:id", async (req, res) => {
     const formattedProduct = {
       id: trace.productId,
       name: finalProductName,
+      careLogs: productInDB ? productInDB.careDiary : [],
       farm: {
         name: finalFarmName,
         owner: trace.creatorName,
