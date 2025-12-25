@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const jwtAuth = require("../middleware/auth");
 const Notification = require("../models/Notification");
+const Transaction = require("../models/Transaction");
+const auth = require("../middleware/auth");
 
 const router = express.Router();
 
