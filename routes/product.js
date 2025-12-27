@@ -83,10 +83,24 @@ router.get("/pending-requests", jwtAuth, async (req, res) => {
         date: p.plantingDate,
         quantity: p.quantity || "N/A",
       };
-      if (p.plantingStatus === 0) {
-        planting.push({ ...item, type: "planting" });
+if (p.plantingStatus === 0) {
+        // --- TRƯỜNG HỢP 1: CHỜ DUYỆT GIEO TRỒNG ---
+        planting.push({
+          ...item,
+          type: "planting",
+          date: p.plantingDate, // Ngày gieo
+          plantingImageUrl: p.plantingImageUrl, // Link ảnh gieo
+          image: p.plantingImageUrl, // (Fallback cho app cũ)
+        });
       } else {
-        harvest.push({ ...item, type: "harvest", quantity: "N/A" });
+        // --- TRƯỜNG HỢP 2: CHỜ DUYỆT THU HOẠCH ---
+        harvest.push({
+          ...item,
+          type: "harvest",
+          date: p.harvestDate, // 🔴 Sửa thành Ngày thu hoạch (quan trọng)
+          harvestImageUrl: p.harvestImageUrl, // 🔴 Lấy đúng ảnh thu hoạch
+          image: p.harvestImageUrl, // (Fallback)
+        });
       }
     });
 
