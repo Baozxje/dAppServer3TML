@@ -16,7 +16,7 @@ const productSchema = new mongoose.Schema({
   plantingImageUrl: { type: String },
   plantingDate: { type: Number }, 
   harvestImageUrl: { type: String },
-  harvestDate: { type: Number },
+  harvestDate: { type: Number },  
 
   // Thông tin vận chuyển/bán lẻ (để lọc cho Transporter/Retailer)
   transporterName: { type: String },

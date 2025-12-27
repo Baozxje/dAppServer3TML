@@ -81,8 +81,6 @@ router.get("/pending-requests", jwtAuth, async (req, res) => {
         farm: p.farmName || "Nông trại",
         image: p.plantingImageUrl,
         date: p.plantingDate,
-        image: p.harvestImageUrl,
-        date: p.harvestDate,
         quantity: p.quantity || "N/A",
       };
       if (p.plantingStatus === 0) {
@@ -97,7 +95,7 @@ router.get("/pending-requests", jwtAuth, async (req, res) => {
             } else {
               // --- TRƯỜNG HỢP 2: CHỜ DUYỆT THU HOẠCH ---
               harvest.push({
-                ...item,
+                ...tem,
                 type: "harvest",
                 date: p.harvestDate, 
                 harvestImageUrl: p.harvestImageUrl,

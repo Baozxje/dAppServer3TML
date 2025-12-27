@@ -249,6 +249,7 @@ router.post("/", jwtAuth, async (req, res) => {
               quantity: data.quantity || 0,
               unit: data.unit || "Kg",
               quality: data.quality || "Loại 1",
+              harvestImageUrl: data.harvestImageUrl || "",
             }
           );
           await notifyAllModerators(
