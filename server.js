@@ -24,6 +24,13 @@ app.use("/api/auth/transactions", transactionRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/forgot-password", forgotPasswordRoutes);
 
+
+const registerValidationRules = [
+  body("fullName").notEmpty().withMessage("Họ và tên không được để trống"),
+  body("email").notEmpty().withMessage("Email không hợp lệ"),
+  body("password").notEmpty().withMessage("Mật khẩu phải có ít nhất 6 ký tự"),
+];  
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {

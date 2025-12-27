@@ -5,20 +5,30 @@ const jwtAuth = require("../middleware/auth");
 const Notification = require("../models/Notification");
 const Transaction = require("../models/Transaction");
 const auth = require("../middleware/auth");
+const { default: rateLimit } = require("express-rate-limit");
 
 const router = express.Router();
 
 const ROLE_KEYS = {
-  farmer: process.env.KEY_FARMER || "FARM123",
-  transporter: process.env.KEY_TRANSPORTER || "SHIP456",
-  moderator: process.env.KEY_MODERATOR || "MOD789",
-  manager: process.env.KEY_MANAGER || "BOSS999",
+  farmer: process.env.KEY_FARMER,
+  transporter: process.env.KEY_TRANSPORTER,
+  moderator: process.env.KEY_MODERATOR,
+  manager: process.env.KEY_MANAGER,
 };
-
+const registerValidationRules = [
+  body("fullName").notEmpty().withMessage("Họ và tên không được để trống"),
+  body("email").isEmail().withMessage("Email không hợp lệ"),
+  body("password").isLength({ min: 6 }).withMessage("Mật khẩu phải có ít nhất 6 ký tự"),
+];  
 // ==========================================
 // ĐĂNG KÝ (REGISTER)
 // ==========================================
-router.post("/register", async (req, res) => {
+router.post("/register", registerValidationRules, async (req, res) => {
+  const error = validationResult(req);
+  if (!error.isEmpty()) {
+  return res.status(400).json({ errors: error.array() });
+}
+
   const {
     fullName,
     phone,
@@ -82,10 +92,17 @@ router.post("/register", async (req, res) => {
   }
 });
 
+const apilimiter = rateLimit({
+  max: 5, // so lan yeu cau toi da cho moi IP
+  windowMs: 15 * 60 * 1000, // trong vong 15p
+  message:
+    "qua nhieu yeu cau tu 1 ip, vui long thu lai sau 15 phut",
+});
+
 // ====================
 // ĐĂNG NHẬP (LOGIN)
 // ====================
-router.post("/login", async (req, res) => {
+router.post("/login", apilimiter, async (req, res) => {
   const { email, password } = req.body;
 
   try {

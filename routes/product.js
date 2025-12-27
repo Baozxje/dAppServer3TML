@@ -353,7 +353,9 @@ router.get("/:id", async (req, res) => {
         name: finalFarmName,
         owner: trace.creatorName,
         phone: trace.creatorPhone,
-        seed: trace.seedOrigin || "Không rõ nguồn gốc",
+        seed: (trace.seedOrigin && trace.seedOrigin !== "") 
+      ? trace.seedOrigin 
+      : (productInDB ? productInDB.seedSource : "Không rõ nguồn gốc"),
         location:
           productInDB && productInDB.farmLocation
             ? productInDB.farmLocation
