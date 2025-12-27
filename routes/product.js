@@ -324,8 +324,8 @@ router.get("/:id", async (req, res) => {
     let harvestQty = "Chưa cập nhật";
     let harvestQuality = "Chưa kiểm định";
 
-    let finalCareLogs = [];
     
+
     try {
       // 1. Tìm trong Database để lấy dữ liệu chuẩn nhất
       productInDB = await Product.findOne({ productId: productId });
@@ -360,7 +360,8 @@ router.get("/:id", async (req, res) => {
 
     // 2. Lấy nhật ký chăm sóc (CareLogs) - Vì mảng trong struct đôi khi trả về lỗi, nên gọi hàm riêng nếu có
     // Nếu trong contract ông có hàm getCareLogs thì dùng, không thì dùng trace.careLogs
-    
+    const careLogs = trace.careLogs || [];
+    let finalCareLogs = [];
     if (
       productInDB &&
       productInDB.careDiary &&
