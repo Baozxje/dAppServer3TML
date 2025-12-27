@@ -40,7 +40,7 @@ router.post("/register", async (req, res) => {
   if (!["farmer", "transporter", "moderator", "manager"].includes(role)) {
     return res.status(400).json({ msg: "Role không hợp lệ" });
   }
-
+  
   // --- CHECK 2: Secret Key có đúng với Role không? ---
   if (secretKey !== ROLE_KEYS[role]) {
     return res.status(403).json({ msg: "Mã xác thực chức vụ không đúng!" });
