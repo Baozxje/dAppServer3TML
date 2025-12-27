@@ -81,6 +81,8 @@ router.get("/pending-requests", jwtAuth, async (req, res) => {
         farm: p.farmName || "Nông trại",
         image: p.plantingImageUrl,
         date: p.plantingDate,
+        image: p.harvestImageUrl,
+        date: p.harvestDate,
         quantity: p.quantity || "N/A",
       };
       if (p.plantingStatus === 0) {

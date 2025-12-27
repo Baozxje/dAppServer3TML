@@ -14,7 +14,7 @@ const productSchema = new mongoose.Schema({
 
   // Thông tin hiển thị nhanh
   plantingImageUrl: { type: String },
-  plantingDate: { type: Number },
+  plantingDate: { type: Number }, 
   harvestImageUrl: { type: String },
   harvestDate: { type: Number },
 
