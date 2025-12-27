@@ -86,7 +86,7 @@ router.get("/pending-requests", jwtAuth, async (req, res) => {
       if (p.plantingStatus === 0) {
               // --- TRƯỜNG HỢP 1: CHỜ DUYỆT GIEO TRỒNG ---
               planting.push({
-                ...baseItem,
+                ...item,
                 type: "planting",
                 date: p.plantingDate, // Ngày gieo
                 plantingImageUrl: p.plantingImageUrl, // Link ảnh gieo
@@ -95,7 +95,7 @@ router.get("/pending-requests", jwtAuth, async (req, res) => {
             } else {
               // --- TRƯỜNG HỢP 2: CHỜ DUYỆT THU HOẠCH ---
               harvest.push({
-                ...baseItem,
+                ...item,
                 type: "harvest",
                 date: p.harvestDate, 
                 harvestImageUrl: p.harvestImageUrl,
