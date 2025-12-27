@@ -83,7 +83,7 @@ router.get("/pending-requests", jwtAuth, async (req, res) => {
         date: p.plantingDate,
         quantity: p.quantity || "N/A",
       };
-if (p.plantingStatus === 0) {
+      if (p.plantingStatus === 0) {
         // --- TRƯỜNG HỢP 1: CHỜ DUYỆT GIEO TRỒNG ---
         planting.push({
           ...item,
@@ -123,14 +123,15 @@ router.get("/moderated-requests", jwtAuth, async (req, res) => {
     // --- FIX HIỆU NĂNG: Thay thế vòng lặp for gọi từng cái ---
     // Thay vì gọi 1000 lần, ta chỉ gọi 1 lần duy nhất lấy về mảng struct
     // Lưu ý: Hàm này trả về danh sách được duyệt bởi Relayer (Backend)
-    const allTracesRaw = await readContract.getModeratedProducts(relayerAddress);
+    const allTracesRaw = await readContract.getModeratedProducts(
+      relayerAddress
+    );
 
-     const uniqueMap = new Map();
-    allTracesRaw.forEach(item => {
+    const uniqueMap = new Map();
+    allTracesRaw.forEach((item) => {
       uniqueMap.set(item.productId, item); // Item sau sẽ đè item trước -> Giữ cái mới nhất
     });
     const allTraces = Array.from(uniqueMap.values()); // Chuyển lại thành mảng
-
 
     console.log(
       `--> Lấy về ${allTraces.length} sản phẩm đã duyệt (Batch Request)`
@@ -323,6 +324,8 @@ router.get("/:id", async (req, res) => {
     let harvestQty = "Chưa cập nhật";
     let harvestQuality = "Chưa kiểm định";
 
+    let finalCareLogs = [];
+    
     try {
       // 1. Tìm trong Database để lấy dữ liệu chuẩn nhất
       productInDB = await Product.findOne({ productId: productId });
@@ -357,14 +360,18 @@ router.get("/:id", async (req, res) => {
 
     // 2. Lấy nhật ký chăm sóc (CareLogs) - Vì mảng trong struct đôi khi trả về lỗi, nên gọi hàm riêng nếu có
     // Nếu trong contract ông có hàm getCareLogs thì dùng, không thì dùng trace.careLogs
-let finalCareLogs = [];
-    if (productInDB && productInDB.careDiary && productInDB.careDiary.length > 0) {
+    
+    if (
+      productInDB &&
+      productInDB.careDiary &&
+      productInDB.careDiary.length > 0
+    ) {
       // Format dữ liệu từ MongoDB
-      finalCareLogs = productInDB.careDiary.map(log => ({
+      finalCareLogs = productInDB.careDiary.map((log) => ({
         type: log.actionType || log.careType, // Hỗ trợ cả 2 tên biến
         desc: log.description,
         date: log.date,
-        image: log.image || log.careImageUrl
+        image: log.image || log.careImageUrl,
       }));
     } else {
       // Format dữ liệu từ Blockchain (Fallback)
@@ -385,9 +392,12 @@ let finalCareLogs = [];
         name: finalFarmName,
         owner: trace.creatorName,
         phone: trace.creatorPhone,
-        seed: (trace.seedOrigin && trace.seedOrigin !== "") 
-      ? trace.seedOrigin 
-      : (productInDB ? productInDB.seedSource : "Không rõ nguồn gốc"),
+        seed:
+          trace.seedOrigin && trace.seedOrigin !== ""
+            ? trace.seedOrigin
+            : productInDB
+            ? productInDB.seedSource
+            : "Không rõ nguồn gốc",
         location:
           productInDB && productInDB.farmLocation
             ? productInDB.farmLocation
