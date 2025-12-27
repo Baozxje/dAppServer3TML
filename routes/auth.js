@@ -15,20 +15,11 @@ const ROLE_KEYS = {
   moderator: process.env.KEY_MODERATOR,
   manager: process.env.KEY_MANAGER,
 };
-const registerValidationRules = [
-  body("fullName").notEmpty().withMessage("Họ và tên không được để trống"),
-  body("email").isEmail().withMessage("Email không hợp lệ"),
-  body("password").isLength({ min: 6 }).withMessage("Mật khẩu phải có ít nhất 6 ký tự"),
-];  
+
 // ==========================================
 // ĐĂNG KÝ (REGISTER)
 // ==========================================
-router.post("/register", registerValidationRules, async (req, res) => {
-  const error = validationResult(req);
-  if (!error.isEmpty()) {
-  return res.status(400).json({ errors: error.array() });
-}
-
+router.post("/register", async (req, res) => {
   const {
     fullName,
     phone,
