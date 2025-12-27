@@ -7,7 +7,7 @@ const Product = require("../models/Product");
 const Notification = require("../models/Notification");
 const { sendPushNotification } = require("../models/firebaseConfig");
 
-const seedInput = data.seedSource || data.seedOrigin || "Chưa rõ nguồn gốc";
+
 // ==========================================
 // CÁC HÀM HỖ TRỢ (HELPER FUNCTIONS) - Đưa lên đầu để tránh lỗi
 // ==========================================
@@ -64,6 +64,7 @@ router.post("/", jwtAuth, async (req, res) => {
     // 1. TẠO GIAO DỊCH BLOCKCHAIN
     switch (action) {
       case "addProduct":
+        const seedInput = data.seedSource || data.seedOrigin || "Chưa rõ nguồn gốc";
         tx = await contract.addProduct(
           data.productName,
           data.productId,
