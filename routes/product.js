@@ -123,7 +123,14 @@ router.get("/moderated-requests", jwtAuth, async (req, res) => {
     // --- FIX HIỆU NĂNG: Thay thế vòng lặp for gọi từng cái ---
     // Thay vì gọi 1000 lần, ta chỉ gọi 1 lần duy nhất lấy về mảng struct
     // Lưu ý: Hàm này trả về danh sách được duyệt bởi Relayer (Backend)
-    const allTraces = await readContract.getModeratedProducts(relayerAddress);
+    const allTracesRaw = await readContract.getModeratedProducts(relayerAddress);
+
+     const uniqueMap = new Map();
+    allTracesRaw.forEach(item => {
+      uniqueMap.set(item.productId, item); // Item sau sẽ đè item trước -> Giữ cái mới nhất
+    });
+    const allTraces = Array.from(uniqueMap.values()); // Chuyển lại thành mảng
+
 
     console.log(
       `--> Lấy về ${allTraces.length} sản phẩm đã duyệt (Batch Request)`
@@ -350,19 +357,30 @@ router.get("/:id", async (req, res) => {
 
     // 2. Lấy nhật ký chăm sóc (CareLogs) - Vì mảng trong struct đôi khi trả về lỗi, nên gọi hàm riêng nếu có
     // Nếu trong contract ông có hàm getCareLogs thì dùng, không thì dùng trace.careLogs
-    let careLogs = [];
-    try {
-      careLogs = await readContract.getCareLogs(productId);
-    } catch (e) {
-      console.log("⚠️ Không lấy được CareLogs hoặc rỗng:", e.message);
-      careLogs = trace.careLogs || [];
+let finalCareLogs = [];
+    if (productInDB && productInDB.careDiary && productInDB.careDiary.length > 0) {
+      // Format dữ liệu từ MongoDB
+      finalCareLogs = productInDB.careDiary.map(log => ({
+        type: log.actionType || log.careType, // Hỗ trợ cả 2 tên biến
+        desc: log.description,
+        date: log.date,
+        image: log.image || log.careImageUrl
+      }));
+    } else {
+      // Format dữ liệu từ Blockchain (Fallback)
+      finalCareLogs = careLogs.map((log) => ({
+        type: log.careType,
+        desc: log.description,
+        date: toNumber(log.careDate),
+        image: log.careImageUrl,
+      }));
     }
 
     // 3. Format dữ liệu cho đẹp (BigInt -> Number)
     const formattedProduct = {
       id: trace.productId,
       name: finalProductName,
-      careLogs: productInDB ? productInDB.careDiary : [],
+      careLogs: finalCareLogs,
       farm: {
         name: finalFarmName,
         owner: trace.creatorName,
@@ -403,13 +421,6 @@ router.get("/:id", async (req, res) => {
         price: toNumber(trace.price),
         image: trace.managerReceiveImageUrl,
       },
-      // Format lại CareLogs
-      careLogs: careLogs.map((log) => ({
-        type: log.careType,
-        desc: log.description,
-        date: toNumber(log.careDate),
-        image: log.careImageUrl,
-      })),
     };
 
     res.json({ success: true, data: formattedProduct });
