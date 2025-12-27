@@ -92,11 +92,17 @@ router.post("/", jwtAuth, async (req, res) => {
           currentUser.fullName || ""
         );
         break;
-      case "harvestProduct":
+        case "harvestProduct":
+        // 1. 🔥 QUAN TRỌNG: Lấy thông tin cũ từ DB để không bị mất tên
+        const currentProd = await Product.findOne({ productId: data.productId });
+        const safeProductName = data.productName || (currentProd ? currentProd.productName : "Sản phẩm");
+        const safeFarmName = data.farmName || (currentProd ? currentProd.farmName : "Nông trại");
+
+        // 2. Gửi cập nhật lên Blockchain với tên đầy đủ
         tx = await contract.updateProduct(
           data.productId,
-          data.productName || "",
-          data.farmName || "",
+          safeProductName, 
+          safeFarmName,    
           data.harvestDate,
           data.harvestImageUrl || "",
           data.quantity || 0,
