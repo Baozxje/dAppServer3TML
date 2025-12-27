@@ -84,11 +84,25 @@ router.get("/pending-requests", jwtAuth, async (req, res) => {
         quantity: p.quantity || "N/A",
       };
       if (p.plantingStatus === 0) {
-        planting.push({ ...item, type: "planting" });
-      } else {
-        harvest.push({ ...item, type: "harvest", quantity: "N/A" });
-      }
-    });
+              // --- TRƯỜNG HỢP 1: CHỜ DUYỆT GIEO TRỒNG ---
+              planting.push({
+                ...baseItem,
+                type: "planting",
+                date: p.plantingDate, // Ngày gieo
+                plantingImageUrl: p.plantingImageUrl, // Link ảnh gieo
+                image: p.plantingImageUrl, // (Fallback cho app cũ)
+              });
+            } else {
+              // --- TRƯỜNG HỢP 2: CHỜ DUYỆT THU HOẠCH ---
+              harvest.push({
+                ...baseItem,
+                type: "harvest",
+                date: p.harvestDate, 
+                harvestImageUrl: p.harvestImageUrl,
+                image: p.harvestImageUrl, // (Fallback)
+              });
+            }
+          });
 
     res.json({ success: true, data: { planting, harvest } });
   } catch (error) {
