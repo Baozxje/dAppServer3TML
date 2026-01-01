@@ -16,7 +16,9 @@ const ROLE_KEYS = {
   manager: process.env.KEY_MANAGER,
 };
 
+// ==========================================
 // ĐĂNG KÝ (REGISTER)
+// ==========================================
 router.post("/register", async (req, res) => {
   const {
     fullName,
@@ -243,6 +245,9 @@ router.post("/update-profile", jwtAuth, async (req, res) => {
   }
 });
 
+//=========================================
+// Notifications
+//=========================================
 // API: Lấy danh sách thông báo của User
 router.get("/notifications", jwtAuth, async (req, res) => {
   try {
@@ -310,6 +315,6 @@ router.get('/transactions', auth, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-
+//end 
 
 module.exports = router;
