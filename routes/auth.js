@@ -16,9 +16,7 @@ const ROLE_KEYS = {
   manager: process.env.KEY_MANAGER,
 };
 
-// ==========================================
 // ĐĂNG KÝ (REGISTER)
-// ==========================================
 router.post("/register", async (req, res) => {
   const {
     fullName,
@@ -31,7 +29,7 @@ router.post("/register", async (req, res) => {
     secretKey,
   } = req.body;
 
-  if (password !== confirmPassword)
+  if (password !== confirmPassword) // su dung toan tu so sanh 
     return res.status(400).json({ msg: "Passwords do not match" });
 
   if (role === "admin")
@@ -40,7 +38,7 @@ router.post("/register", async (req, res) => {
   if (!["farmer", "transporter", "moderator", "manager"].includes(role)) {
     return res.status(400).json({ msg: "Role không hợp lệ" });
   }
-  
+
   // --- CHECK 2: Secret Key có đúng với Role không? ---
   if (secretKey !== ROLE_KEYS[role]) {
     return res.status(403).json({ msg: "Mã xác thực chức vụ không đúng!" });
@@ -245,9 +243,6 @@ router.post("/update-profile", jwtAuth, async (req, res) => {
   }
 });
 
-//=========================================
-// Notifications
-//=========================================
 // API: Lấy danh sách thông báo của User
 router.get("/notifications", jwtAuth, async (req, res) => {
   try {
