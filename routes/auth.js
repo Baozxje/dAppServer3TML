@@ -38,7 +38,7 @@ router.post("/register", async (req, res) => {
   if (role === "admin")
     return res.status(403).json({ msg: "Cannot register as admin" });
 
-  if (!["farmer", "transporter", "moderator", "manager"].includes(role)) {
+  if (!["farmer", "transporter", "moderator", "manager", "manufacturer"].includes(role)) {
     return res.status(400).json({ msg: "Role không hợp lệ" });
   }
 
