@@ -14,6 +14,7 @@ const ROLE_KEYS = {
   transporter: process.env.KEY_TRANSPORTER,
   moderator: process.env.KEY_MODERATOR,
   manager: process.env.KEY_MANAGER,
+  manufacturer: process.env.KEY_MANUFACTURER,
 };
 
 // ==========================================

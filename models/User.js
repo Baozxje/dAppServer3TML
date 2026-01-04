@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
   companyName: { type: String, default: "" },
   role: {
     type: String,
-    enum: ["farmer", "transporter", "manager", "moderator", "admin"],
+    enum: ["farmer", "transporter", "manager", "moderator","manufacturer", "admin"],
     default: "farmer",
   },
   avatar: { type: String, default: "" },
